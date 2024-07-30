@@ -1,0 +1,44 @@
+//front end
+
+
+
+
+import React, { useState, useEffect } from 'react';
+import { ProgressBar, Button } from 'react-bootstrap';
+import 'bootstrap/dist/css/bootstrap.min.css';
+
+const UploadProgress = () => {
+  const [progress, setProgress] = useState(0);
+  const [intervalId, setIntervalId] = useState(null);
+
+  useEffect(() => {
+    if (progress === 100 && intervalId) {
+      clearInterval(intervalId);
+    }
+  }, [progress, intervalId]);
+
+  const fetchProgress = async () => {
+    const response = await fetch('http://localhost:3000/progress');
+    const data = await response.json();
+    setProgress(data.progress);
+  };
+
+  const handleUpload = async () => {
+    const response = await fetch('http://localhost:3000/start-process', { method: 'POST' });
+    if (response.ok) {
+      console.log('Process started');
+      const id = setInterval(fetchProgress, 1000);
+      setIntervalId(id);
+    }
+  };
+
+  return (
+    <div>
+      <ProgressBar now={progress} label={`${progress}%`} />
+      <Button onClick={handleUpload}>Start Upload</Button>
+    </div>
+  );
+};
+
+export default UploadProgress;
+
