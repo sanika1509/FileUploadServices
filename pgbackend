@@ -1,0 +1,39 @@
+//Progress bar
+
+
+const express = require('express');
+const app = express();
+const port = 3000;
+
+app.use(express.json());
+
+let progress = 0;
+
+app.get('/progress', (req, res) => {
+  res.json({ progress });
+});
+
+const updateProgress = (value) => {
+  progress = value;
+};
+
+app.post('/start-process', async (req, res) => {
+  updateProgress(10); // Initial progress
+  await new Promise((resolve) => setTimeout(resolve, 1000)); // Simulate file upload
+
+  updateProgress(30); // After file upload
+  await new Promise((resolve) => setTimeout(resolve, 2000)); // Simulate Python processing
+
+  updateProgress(60); // After Python processing
+  await new Promise((resolve) => setTimeout(resolve, 1000)); // Simulate storing in DB
+
+  updateProgress(80); // After storing in DB
+  await new Promise((resolve) => setTimeout(resolve, 1000)); // Simulate Excel comparison
+
+  updateProgress(100); // After Excel comparison
+  res.status(200).send('Process completed');
+});
+
+app.listen(port, () => {
+  console.log(`Server running at http://localhost:${port}`);
+});
